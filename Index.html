@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AKHARA">
+<meta name="theme-color" content="#050505">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<title>AKHARA — Lists</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;0,400;1,200;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --black:#050505;
+  --white:#f2ede4;
+  --gold:#b8964e;
+  --gold2:#d4af6e;
+  --gold-dim:rgba(184,150,78,0.12);
+  --gold-line:rgba(184,150,78,0.18);
+  --glass:rgba(12,9,5,0.82);
+  --glass-hover:rgba(20,15,8,0.88);
+  --grey:#888070;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;overflow:hidden;background:var(--black)}
+body{
+  font-family:'DM Mono',monospace;
+  color:var(--white);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  position:relative;
+}
+
+/* ── BACKGROUND ORBS ── */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;pointer-events:none}
+.orb1{width:200px;height:200px;top:-40px;right:-40px;background:radial-gradient(circle at 30% 25%,rgba(184,150,78,0.18),rgba(184,150,78,0.04) 50%,transparent 70%);animation:orbFloat 14s ease-in-out infinite}
+.orb2{width:160px;height:160px;bottom:20%;left:-50px;background:radial-gradient(circle at 35% 30%,rgba(184,150,78,0.12),transparent 65%);animation:orbFloat 18s ease-in-out infinite reverse}
+.orb3{width:120px;height:120px;bottom:10%;right:10%;background:radial-gradient(circle at 30% 25%,rgba(184,150,78,0.1),transparent 65%);animation:orbFloat 12s ease-in-out infinite;animation-delay:-5s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0)}33%{transform:translate(12px,-18px)}66%{transform:translate(-8px,10px)}}
+
+/* Meridian bg marks */
+.bg-mark{position:fixed;pointer-events:none;opacity:0.08;animation:markSpin 20s linear infinite}
+.bg-mark:nth-child(4){width:80px;height:80px;top:15%;left:5%;animation-duration:22s}
+.bg-mark:nth-child(5){width:50px;height:50px;top:55%;right:8%;animation-duration:16s;animation-delay:-8s}
+.bg-mark:nth-child(6){width:65px;height:65px;bottom:25%;left:40%;animation-duration:25s;animation-delay:-12s}
+@keyframes markSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* ── APP SHELL ── */
+.app{position:relative;z-index:1;display:flex;flex-direction:column;height:100%;height:100dvh;max-width:480px;margin:0 auto;width:100%}
+
+/* ── HEADER ── */
+.header{
+  padding:calc(var(--safe-top) + 14px) 20px 14px;
+  background:rgba(5,5,5,0.9);
+  border-bottom:1px solid var(--gold-line);
+  display:flex;align-items:center;gap:12px;
+  flex-shrink:0;
+  backdrop-filter:blur(20px);
+}
+.header-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex:1}
+.header-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;letter-spacing:0.3em;color:var(--white);padding-left:0.3em}
+.header-title em{color:var(--gold);font-style:normal}
+.header-sub{font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);opacity:0.6;margin-top:2px}
+.header-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--gold-line);background:transparent;color:var(--gold);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;flex-shrink:0}
+.header-btn:active{background:var(--gold-dim);border-color:var(--gold)}
+
+/* ── VIEWS ── */
+.view{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--safe-bottom) + 80px)}
+.view.hidden{display:none}
+
+/* ── LISTS VIEW ── */
+.lists-header{padding:24px 20px 8px;display:flex;align-items:center;justify-content:space-between}
+.view-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:200;letter-spacing:-0.5px}
+.view-title em{font-style:italic;color:var(--gold)}
+.list-count{font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);opacity:0.6;margin-top:4px}
+
+.lists-grid{padding:8px 20px;display:flex;flex-direction:column;gap:10px}
+
+.list-card{
+  background:var(--glass);
+  border:1px solid var(--gold-line);
+  border-radius:4px;
+  padding:18px 16px;
+  cursor:pointer;
+  transition:all 0.25s;
+  position:relative;
+  overflow:hidden;
+  display:flex;align-items:center;gap:14px;
+}
+.list-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(184,150,78,0.4),transparent)}
+.list-card:active{background:var(--glass-hover);border-color:rgba(184,150,78,0.35);transform:scale(0.98)}
+
+.list-card-icon{width:40px;height:40px;border-radius:50%;border:1px solid var(--gold-line);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:rgba(184,150,78,0.06)}
+.list-card-info{flex:1;min-width:0}
+.list-card-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list-card-meta{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--grey);margin-top:3px}
+.list-card-progress{flex-shrink:0;text-align:right}
+.list-card-prog-num{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--gold);line-height:1}
+.list-card-prog-label{font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--grey);margin-top:2px}
+
+.list-card-actions{display:flex;gap:6px;margin-left:8px}
+.icon-btn{width:30px;height:30px;border-radius:50%;border:1px solid rgba(184,150,78,0.2);background:transparent;color:var(--grey);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;flex-shrink:0}
+.icon-btn:active{background:var(--gold-dim);color:var(--gold);border-color:var(--gold)}
+.icon-btn.danger:active{background:rgba(180,50,50,0.15);color:#c05050;border-color:rgba(180,50,50,0.3)}
+
+/* ── EMPTY STATE ── */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:16px;text-align:center}
+.empty-symbol{opacity:0.2}
+.empty-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:200;color:var(--white)}
+.empty-sub{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--grey)}
+
+/* ── LIST DETAIL VIEW ── */
+.detail-header{padding:20px 20px 12px;border-bottom:1px solid var(--gold-line)}
+.detail-back{display:flex;align-items:center;gap:8px;font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);cursor:pointer;margin-bottom:12px;opacity:0.7}
+.detail-back:active{opacity:1}
+.detail-name{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:200}
+.detail-name em{font-style:italic;color:var(--gold)}
+.detail-stats{display:flex;gap:16px;margin-top:8px}
+.detail-stat{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--grey)}
+.detail-stat span{color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:14px;display:block;margin-bottom:1px}
+
+.detail-progress-bar{height:2px;background:rgba(184,150,78,0.1);margin:12px 0 0;border-radius:1px;overflow:hidden}
+.detail-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:1px;transition:width 0.4s cubic-bezier(.16,1,.3,1)}
+
+.items-list{padding:12px 20px;display:flex;flex-direction:column;gap:8px}
+
+/* ── ITEM CARD ── */
+.item-card{
+  background:var(--glass);
+  border:1px solid var(--gold-line);
+  border-radius:4px;
+  padding:14px 14px;
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;gap:12px;
+  transition:all 0.2s;
+}
+.item-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(184,150,78,0.3),transparent)}
+.item-card.done{opacity:0.5}
+.item-card.done .item-name{text-decoration:line-through;color:var(--grey)}
+
+.item-tap-area{flex:1;cursor:pointer;display:flex;align-items:center;gap:12px;min-width:0}
+.item-tap-area:active .item-progress-ring{transform:scale(0.92)}
+
+.item-progress-ring{
+  width:42px;height:42px;flex-shrink:0;position:relative;
+  transition:transform 0.15s;
+}
+.item-progress-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:rgba(184,150,78,0.12);stroke-width:2}
+.ring-fill{fill:none;stroke:var(--gold);stroke-width:2;stroke-linecap:round;transition:stroke-dashoffset 0.4s cubic-bezier(.16,1,.3,1)}
+.ring-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;color:var(--gold);line-height:1}
+
+.item-info{flex:1;min-width:0}
+.item-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-sub{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--grey);margin-top:2px}
+
+.item-actions{display:flex;gap:4px;flex-shrink:0}
+
+/* Simple checkbox item */
+.item-check{
+  width:28px;height:28px;border-radius:4px;
+  border:1.5px solid rgba(184,150,78,0.5);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.2s;font-size:14px;
+  background:transparent;
+}
+.item-check.checked{
+  background:var(--gold);
+  border-color:var(--gold);
+  color:var(--black);
+  box-shadow:0 0 12px rgba(184,150,78,0.35);
+}
+
+/* ── FAB ── */
+.fab{
+  position:fixed;
+  bottom:calc(var(--safe-bottom) + 20px);
+  right:20px;
+  width:52px;height:52px;
+  background:var(--gold);
+  border-radius:50%;
+  border:none;
+  color:var(--black);
+  font-size:24px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  box-shadow:0 4px 20px rgba(184,150,78,0.35),0 0 40px rgba(184,150,78,0.12);
+  transition:all 0.2s;
+  z-index:100;
+  font-family:'DM Mono',monospace;
+}
+.fab:active{transform:scale(0.92);background:var(--gold2)}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(8px);
+  z-index:200;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.3s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:linear-gradient(180deg,rgba(20,15,8,0.98),rgba(12,9,5,0.99));
+  border:1px solid var(--gold-line);
+  border-bottom:none;
+  border-radius:16px 16px 0 0;
+  padding:24px 20px calc(var(--safe-bottom) + 24px);
+  width:100%;max-width:480px;
+  transform:translateY(100%);
+  transition:transform 0.35s cubic-bezier(.16,1,.3,1);
+  position:relative;
+  overflow:hidden;
+}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(184,150,78,0.5),transparent)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-handle{width:36px;height:3px;background:rgba(184,150,78,0.3);border-radius:2px;margin:0 auto 20px}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:200;margin-bottom:20px}
+.modal-title em{font-style:italic;color:var(--gold)}
+
+.form-field{margin-bottom:16px}
+.form-label{font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);opacity:0.65;display:block;margin-bottom:8px}
+.form-input{
+  width:100%;
+  background:rgba(184,150,78,0.04);
+  border:1px solid var(--gold-line);
+  color:var(--white);
+  font-family:'Cormorant Garamond',serif;
+  font-size:16px;
+  padding:12px 14px;
+  outline:none;
+  border-radius:2px;
+  transition:border-color 0.2s,background 0.2s;
+}
+.form-input:focus{border-color:var(--gold);background:rgba(184,150,78,0.07)}
+.form-input::placeholder{color:rgba(242,237,228,0.25)}
+select.form-input option{background:#0a0806;color:var(--white)}
+
+.form-row{display:flex;gap:10px}
+.form-row .form-field{flex:1}
+
+.checks-grid{display:flex;gap:8px;flex-wrap:wrap}
+.checks-opt{
+  padding:8px 14px;
+  border:1px solid var(--gold-line);
+  border-radius:2px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:15px;
+  cursor:pointer;
+  transition:all 0.2s;
+  color:var(--grey);
+  background:transparent;
+}
+.checks-opt.sel{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.btn{
+  flex:1;padding:14px;
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;
+  border:none;border-radius:2px;cursor:pointer;transition:all 0.2s;
+}
+.btn-primary{background:var(--gold);color:var(--black)}
+.btn-primary:active{background:var(--gold2)}
+.btn-ghost{background:transparent;color:var(--gold);border:1px solid var(--gold-line)}
+.btn-ghost:active{background:var(--gold-dim)}
+
+/* ── EMOJI PICKER ── */
+.emoji-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.emoji-opt{width:36px;height:36px;border:1px solid var(--gold-line);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:all 0.2s;background:transparent}
+.emoji-opt.sel{border-color:var(--gold);background:var(--gold-dim)}
+.emoji-opt:active{transform:scale(0.9)}
+
+/* ── CONFIRM SHEET ── */
+.confirm-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:200;margin-bottom:8px}
+.confirm-sub{font-size:11px;color:var(--grey);margin-bottom:20px;line-height:1.6}
+.btn-danger{background:rgba(180,50,50,0.15);color:#d06060;border:1px solid rgba(180,50,50,0.2)}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;top:calc(var(--safe-top) + 70px);left:50%;transform:translateX(-50%) translateY(-20px);
+  background:rgba(20,15,8,0.95);border:1px solid var(--gold-line);
+  padding:10px 20px;border-radius:2px;
+  font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);
+  z-index:500;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:2px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(184,150,78,0.2);border-radius:1px}
+
+@media(prefers-color-scheme:dark){html{color-scheme:dark}}
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND -->
+<div class="bg">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <!-- Meridian marks -->
+  <div class="bg-mark">
+    <svg viewBox="0 0 64 72" fill="none" width="100%" height="100%">
+      <circle cx="32" cy="40" r="22" stroke="#b8964e" stroke-width="0.8" fill="none"/>
+      <circle cx="32" cy="40" r="14" stroke="#b8964e" stroke-width="0.4" fill="none"/>
+      <line x1="32" y1="4" x2="32" y2="68" stroke="#b8964e" stroke-width="1"/>
+      <line x1="20" y1="40" x2="44" y2="40" stroke="#b8964e" stroke-width="0.6"/>
+      <circle cx="32" cy="10" r="2.5" fill="#b8964e"/>
+    </svg>
+  </div>
+  <div class="bg-mark">
+    <svg viewBox="0 0 64 72" fill="none" width="100%" height="100%">
+      <circle cx="32" cy="40" r="22" stroke="#b8964e" stroke-width="0.8" fill="none"/>
+      <circle cx="32" cy="40" r="14" stroke="#b8964e" stroke-width="0.4" fill="none"/>
+      <line x1="32" y1="4" x2="32" y2="68" stroke="#b8964e" stroke-width="1"/>
+      <line x1="20" y1="40" x2="44" y2="40" stroke="#b8964e" stroke-width="0.6"/>
+      <circle cx="32" cy="10" r="2.5" fill="#b8964e"/>
+    </svg>
+  </div>
+  <div class="bg-mark">
+    <svg viewBox="0 0 64 72" fill="none" width="100%" height="100%">
+      <circle cx="32" cy="40" r="22" stroke="#b8964e" stroke-width="0.8" fill="none"/>
+      <circle cx="32" cy="40" r="14" stroke="#b8964e" stroke-width="0.4" fill="none"/>
+      <line x1="32" y1="4" x2="32" y2="68" stroke="#b8964e" stroke-width="1"/>
+      <line x1="20" y1="40" x2="44" y2="40" stroke="#b8964e" stroke-width="0.6"/>
+      <circle cx="32" cy="10" r="2.5" fill="#b8964e"/>
+    </svg>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">
+      <svg width="18" height="22" viewBox="0 0 20 24" fill="none">
+        <circle cx="10" cy="14" r="7.5" stroke="#b8964e" stroke-width="0.7" fill="none"/>
+        <circle cx="10" cy="14" r="4.5" stroke="#b8964e" stroke-width="0.35" fill="none" opacity="0.35"/>
+        <line x1="10" y1="1" x2="10" y2="23" stroke="#b8964e" stroke-width="1"/>
+        <line x1="4" y1="14" x2="16" y2="14" stroke="#b8964e" stroke-width="0.55" opacity="0.45"/>
+        <line x1="7" y1="7.5" x2="13" y2="7.5" stroke="#b8964e" stroke-width="0.55" opacity="0.6"/>
+        <circle cx="10" cy="2.5" r="1.6" fill="#b8964e"/>
+      </svg>
+      <div>
+        <div class="header-title">AKH<em>A</em>RA</div>
+        <div class="header-sub" id="header-sub">Lists</div>
+      </div>
+    </div>
+    <button class="header-btn" id="header-action" onclick="handleHeaderAction()" title="Add">+</button>
+  </div>
+
+  <!-- LISTS VIEW -->
+  <div class="view" id="view-lists">
+    <div class="lists-header">
+      <div>
+        <div class="view-title">Your <em>Lists</em></div>
+        <div class="list-count" id="list-count">0 lists</div>
+      </div>
+    </div>
+    <div class="lists-grid" id="lists-container"></div>
+  </div>
+
+  <!-- DETAIL VIEW -->
+  <div class="view hidden" id="view-detail">
+    <div class="detail-header">
+      <div class="detail-back" onclick="goBack()">← All Lists</div>
+      <div class="detail-name" id="detail-name"></div>
+      <div class="detail-stats">
+        <div class="detail-stat"><span id="detail-total">0</span>Items</div>
+        <div class="detail-stat"><span id="detail-done">0</span>Done</div>
+        <div class="detail-stat"><span id="detail-pct">0%</span>Progress</div>
+      </div>
+      <div class="detail-progress-bar"><div class="detail-progress-fill" id="detail-prog-fill" style="width:0%"></div></div>
+    </div>
+    <div class="items-list" id="items-container"></div>
+  </div>
+
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="handleFab()">+</button>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL: NEW / EDIT LIST -->
+<div class="modal-overlay" id="modal-list">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-list-title">New <em>List</em></div>
+    <div class="form-field">
+      <label class="form-label">List Name</label>
+      <input class="form-input" id="list-name-input" placeholder="e.g. Morning Routine" maxlength="40">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Icon</label>
+      <div class="emoji-grid" id="emoji-grid"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-list')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveList()">Save List</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NEW / EDIT ITEM -->
+<div class="modal-overlay" id="modal-item">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-item-title">New <em>Item</em></div>
+    <div class="form-field">
+      <label class="form-label">Item Name</label>
+      <input class="form-input" id="item-name-input" placeholder="e.g. Review trade journal" maxlength="60">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Type</label>
+      <div class="checks-grid">
+        <div class="checks-opt sel" data-type="simple" onclick="selectType(this)">✓ Simple</div>
+        <div class="checks-opt" data-type="counter" onclick="selectType(this)">◎ Counter</div>
+      </div>
+    </div>
+    <div class="form-field" id="counter-field" style="display:none">
+      <label class="form-label">Number of Checks</label>
+      <div class="checks-grid" id="checks-grid"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-item')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveItem()">Save Item</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONFIRM DELETE -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="confirm-title" id="confirm-title">Delete List?</div>
+    <div class="confirm-sub" id="confirm-sub">This cannot be undone.</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-confirm')">Cancel</button>
+      <button class="btn btn-danger" id="confirm-btn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let state = {lists:[], currentListId:null};
+const EMOJIS = ['📋','✅','🎯','📚','💪','✈️','📈','🏋️','🛒','💼','🧠','⭐','🔥','💰','🎵','🌙','☀️','🏆'];
+const CHECKS = [1,2,3,4,5,6,7,8,9,10];
+
+// ── STORAGE ──
+function save(){try{localStorage.setItem('akhara-lists',JSON.stringify(state))}catch(e){}}
+function load(){try{const d=localStorage.getItem('akhara-lists');if(d)state=JSON.parse(d)}catch(e){}}
+
+// ── INIT ──
+load();
+buildEmojiGrid();
+buildChecksGrid();
+renderLists();
+
+function buildEmojiGrid(){
+  const g=document.getElementById('emoji-grid');
+  g.innerHTML=EMOJIS.map((e,i)=>`<div class="emoji-opt${i===0?' sel':''}" onclick="selectEmoji(this)" data-emoji="${e}">${e}</div>`).join('');
+}
+function buildChecksGrid(){
+  const g=document.getElementById('checks-grid');
+  g.innerHTML=CHECKS.map(n=>`<div class="checks-opt${n===3?' sel':''}" onclick="selectChecks(this)" data-n="${n}">${n}</div>`).join('');
+}
+
+// ── NAVIGATION ──
+let currentView='lists';
+function showView(v){
+  document.getElementById('view-lists').classList.toggle('hidden',v!=='lists');
+  document.getElementById('view-detail').classList.toggle('hidden',v!=='detail');
+  currentView=v;
+  updateHeader();
+}
+function updateHeader(){
+  document.getElementById('header-sub').textContent=currentView==='lists'?'Lists':(getList(state.currentListId)||{name:''}).name;
+  document.getElementById('header-action').textContent='+';
+}
+function goBack(){showView('lists');state.currentListId=null;save()}
+function handleHeaderAction(){handleFab()}
+function handleFab(){
+  if(currentView==='lists') openNewListModal();
+  else openNewItemModal();
+}
+
+// ── LISTS ──
+function getList(id){return state.lists.find(l=>l.id===id)}
+function renderLists(){
+  const c=document.getElementById('lists-container');
+  const count=state.lists.length;
+  document.getElementById('list-count').textContent=`${count} list${count!==1?'s':''}`;
+  if(!count){
+    c.innerHTML=`<div class="empty">
+      <div class="empty-symbol"><svg width="48" height="54" viewBox="0 0 64 72" fill="none"><circle cx="32" cy="40" r="22" stroke="#b8964e" stroke-width="0.8" fill="none"/><circle cx="32" cy="40" r="14" stroke="#b8964e" stroke-width="0.4" fill="none" opacity="0.4"/><line x1="32" y1="4" x2="32" y2="68" stroke="#b8964e" stroke-width="1"/><line x1="20" y1="40" x2="44" y2="40" stroke="#b8964e" stroke-width="0.6" opacity="0.45"/><circle cx="32" cy="10" r="2.5" fill="#b8964e"/></svg></div>
+      <div class="empty-title">No lists yet</div>
+      <div class="empty-sub">Tap + to create your first list</div>
+    </div>`;
+    return;
+  }
+  c.innerHTML=state.lists.map(list=>{
+    const done=list.items.filter(i=>isItemDone(i)).length;
+    const total=list.items.length;
+    const pct=total?Math.round(done/total*100):0;
+    return `<div class="list-card" onclick="openList('${list.id}')">
+      <div class="list-card-icon">${list.icon}</div>
+      <div class="list-card-info">
+        <div class="list-card-name">${esc(list.name)}</div>
+        <div class="list-card-meta">${total} item${total!==1?'s':''} · ${pct}% done</div>
+      </div>
+      <div class="list-card-progress">
+        <div class="list-card-prog-num">${done}</div>
+        <div class="list-card-prog-label">/${total}</div>
+      </div>
+      <div class="list-card-actions" onclick="event.stopPropagation()">
+        <button class="icon-btn" onclick="openEditListModal('${list.id}')" title="Edit">✎</button>
+        <button class="icon-btn danger" onclick="confirmDeleteList('${list.id}')" title="Delete">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openList(id){
+  state.currentListId=id;
+  save();
+  renderDetail();
+  showView('detail');
+}
+
+function isItemDone(item){
+  if(item.type==='simple') return item.checked;
+  return item.progress>=item.maxChecks;
+}
+
+function renderDetail(){
+  const list=getList(state.currentListId);
+  if(!list) return;
+  const done=list.items.filter(i=>isItemDone(i)).length;
+  const total=list.items.length;
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById('detail-name').innerHTML=esc(list.name);
+  document.getElementById('detail-total').textContent=total;
+  document.getElementById('detail-done').textContent=done;
+  document.getElementById('detail-pct').textContent=pct+'%';
+  document.getElementById('detail-prog-fill').style.width=pct+'%';
+  const c=document.getElementById('items-container');
+  if(!total){
+    c.innerHTML=`<div class="empty" style="padding:40px 0">
+      <div class="empty-title" style="font-size:20px">No items yet</div>
+      <div class="empty-sub">Tap + to add your first item</div>
+    </div>`;
+    return;
+  }
+  c.innerHTML=list.items.map(item=>{
+    const done=isItemDone(item);
+    if(item.type==='simple'){
+      return `<div class="item-card${done?' done':''}">
+        <div class="item-tap-area" onclick="toggleSimple('${item.id}')">
+          <div class="item-check${done?' checked':''}">${done?'✓':''}</div>
+          <div class="item-info">
+            <div class="item-name">${esc(item.name)}</div>
+            <div class="item-sub">Simple task</div>
+          </div>
+        </div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="openEditItemModal('${item.id}')">✎</button>
+          <button class="icon-btn danger" onclick="confirmDeleteItem('${item.id}')">✕</button>
+        </div>
+      </div>`;
+    }
+    // Counter item
+    const p=item.progress||0;
+    const max=item.maxChecks||3;
+    const circ=2*Math.PI*16;
+    const offset=circ-(circ*(p/max));
+    return `<div class="item-card${done?' done':''}">
+      <div class="item-tap-area" onclick="tapCounter('${item.id}')">
+        <div class="item-progress-ring">
+          <svg viewBox="0 0 36 36" width="42" height="42">
+            <circle class="ring-bg" cx="18" cy="18" r="16"/>
+            <circle class="ring-fill" cx="18" cy="18" r="16" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+          </svg>
+          <div class="ring-text">${p}/${max}</div>
+        </div>
+        <div class="item-info">
+          <div class="item-name">${esc(item.name)}</div>
+          <div class="item-sub">${p} of ${max} checks</div>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="icon-btn" onclick="resetItem('${item.id}')" title="Reset">↺</button>
+        <button class="icon-btn" onclick="openEditItemModal('${item.id}')">✎</button>
+        <button class="icon-btn danger" onclick="confirmDeleteItem('${item.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── LIST MODAL ──
+let editingListId=null;
+function openNewListModal(){
+  editingListId=null;
+  document.getElementById('modal-list-title').innerHTML='New <em>List</em>';
+  document.getElementById('list-name-input').value='';
+  document.querySelectorAll('#emoji-grid .emoji-opt').forEach((e,i)=>e.classList.toggle('sel',i===0));
+  openModal('modal-list');
+  setTimeout(()=>document.getElementById('list-name-input').focus(),400);
+}
+function openEditListModal(id){
+  editingListId=id;
+  const list=getList(id);
+  document.getElementById('modal-list-title').innerHTML='Edit <em>List</em>';
+  document.getElementById('list-name-input').value=list.name;
+  document.querySelectorAll('#emoji-grid .emoji-opt').forEach(e=>e.classList.toggle('sel',e.dataset.emoji===list.icon));
+  openModal('modal-list');
+  setTimeout(()=>document.getElementById('list-name-input').focus(),400);
+}
+function saveList(){
+  const name=document.getElementById('list-name-input').value.trim();
+  if(!name){shake('list-name-input');return}
+  const icon=document.querySelector('#emoji-grid .emoji-opt.sel')?.dataset.emoji||'📋';
+  if(editingListId){
+    const list=getList(editingListId);
+    list.name=name;list.icon=icon;
+  } else {
+    state.lists.push({id:uid(),name,icon,items:[],created:Date.now()});
+  }
+  save();closeModal('modal-list');renderLists();
+  if(currentView==='detail') renderDetail();
+  toast(editingListId?'List updated':'List created');
+}
+
+// ── ITEM MODAL ──
+let editingItemId=null;
+let selectedType='simple';
+function openNewItemModal(){
+  editingItemId=null;
+  document.getElementById('modal-item-title').innerHTML='New <em>Item</em>';
+  document.getElementById('item-name-input').value='';
+  selectType(document.querySelector('[data-type="simple"]'));
+  document.querySelectorAll('#checks-grid .checks-opt').forEach(e=>e.classList.toggle('sel',e.dataset.n==='3'));
+  openModal('modal-item');
+  setTimeout(()=>document.getElementById('item-name-input').focus(),400);
+}
+function openEditItemModal(id){
+  const list=getList(state.currentListId);
+  const item=list.items.find(i=>i.id===id);
+  editingItemId=id;
+  document.getElementById('modal-item-title').innerHTML='Edit <em>Item</em>';
+  document.getElementById('item-name-input').value=item.name;
+  const typeEl=document.querySelector(`[data-type="${item.type}"]`);
+  selectType(typeEl);
+  if(item.type==='counter'){
+    document.querySelectorAll('#checks-grid .checks-opt').forEach(e=>e.classList.toggle('sel',parseInt(e.dataset.n)===item.maxChecks));
+  }
+  openModal('modal-item');
+}
+function saveItem(){
+  const name=document.getElementById('item-name-input').value.trim();
+  if(!name){shake('item-name-input');return}
+  const list=getList(state.currentListId);
+  const max=parseInt(document.querySelector('#checks-grid .checks-opt.sel')?.dataset.n||3);
+  if(editingItemId){
+    const item=list.items.find(i=>i.id===editingItemId);
+    item.name=name;item.type=selectedType;
+    if(selectedType==='counter') item.maxChecks=max;
+  } else {
+    list.items.push({
+      id:uid(),name,type:selectedType,
+      checked:false,progress:0,
+      maxChecks:selectedType==='counter'?max:1,
+      created:Date.now()
+    });
+  }
+  save();closeModal('modal-item');renderDetail();renderLists();
+  toast(editingItemId?'Item updated':'Item added');
+}
+function selectType(el){
+  document.querySelectorAll('.checks-opt[data-type]').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedType=el.dataset.type;
+  document.getElementById('counter-field').style.display=selectedType==='counter'?'block':'none';
+}
+
+// ── ITEM INTERACTIONS ──
+function toggleSimple(id){
+  const list=getList(state.currentListId);
+  const item=list.items.find(i=>i.id===id);
+  item.checked=!item.checked;
+  save();renderDetail();renderLists();
+}
+function tapCounter(id){
+  const list=getList(state.currentListId);
+  const item=list.items.find(i=>i.id===id);
+  if(item.progress<item.maxChecks) item.progress++;
+  else item.progress=0; // wrap back to 0 when fully done
+  save();renderDetail();renderLists();
+}
+function resetItem(id){
+  const list=getList(state.currentListId);
+  const item=list.items.find(i=>i.id===id);
+  item.progress=0;item.checked=false;
+  save();renderDetail();renderLists();toast('Reset');
+}
+
+// ── DELETE ──
+function confirmDeleteList(id){
+  const list=getList(id);
+  document.getElementById('confirm-title').textContent=`Delete "${list.name}"?`;
+  document.getElementById('confirm-sub').textContent=`This will permanently delete this list and all ${list.items.length} item${list.items.length!==1?'s':''}.`;
+  document.getElementById('confirm-btn').onclick=()=>{
+    state.lists=state.lists.filter(l=>l.id!==id);
+    save();closeModal('modal-confirm');renderLists();toast('List deleted');
+  };
+  openModal('modal-confirm');
+}
+function confirmDeleteItem(id){
+  const list=getList(state.currentListId);
+  const item=list.items.find(i=>i.id===id);
+  document.getElementById('confirm-title').textContent=`Delete "${item.name}"?`;
+  document.getElementById('confirm-sub').textContent='This cannot be undone.';
+  document.getElementById('confirm-btn').onclick=()=>{
+    list.items=list.items.filter(i=>i.id!==id);
+    save();closeModal('modal-confirm');renderDetail();renderLists();toast('Item deleted');
+  };
+  openModal('modal-confirm');
+}
+
+// ── HELPERS ──
+function selectEmoji(el){
+  document.querySelectorAll('#emoji-grid .emoji-opt').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function selectChecks(el){
+  document.querySelectorAll('#checks-grid .checks-opt').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function shake(id){
+  const el=document.getElementById(id);
+  el.style.animation='none';el.offsetHeight;
+  el.style.animation='shake 0.3s ease';
+  el.style.borderColor='rgba(180,50,50,0.6)';
+  setTimeout(()=>{el.style.borderColor='';el.style.animation=''},400);
+}
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
+});
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+  if(e.key==='Enter'){
+    if(document.getElementById('modal-list').classList.contains('open')) saveList();
+    else if(document.getElementById('modal-item').classList.contains('open')) saveItem();
+  }
+});
+</script>
+
+<style>
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+</style>
+</body>
+</html>
