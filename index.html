@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>AKHARA — Flashcard Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold: #C9A84C;
+  --gold-light: #E8C96A;
+  --gold-dim: rgba(201,168,76,0.12);
+  --gold-border: rgba(201,168,76,0.25);
+  --black: #080808;
+  --surface: #111111;
+  --surface2: #181818;
+  --surface3: #202020;
+  --border: rgba(255,255,255,0.06);
+  --text: #F0EDE6;
+  --text-muted: rgba(240,237,230,0.38);
+  --text-mid: rgba(240,237,230,0.65);
+  --red: #c0503a;
+}
+
+html, body { height: 100%; background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+
+/* Grain */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity: 0.5;
+}
+
+/* Ambient glow */
+.ambient {
+  position: fixed; pointer-events: none; z-index: 0;
+  top: -30%; right: -15%; width: 70vw; height: 70vw; border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.055) 0%, transparent 65%);
+}
+.ambient2 {
+  position: fixed; pointer-events: none; z-index: 0;
+  bottom: -20%; left: -10%; width: 50vw; height: 50vw; border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.03) 0%, transparent 65%);
+}
+
+.app {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 28px 60px;
+  display: flex; flex-direction: column;
+}
+
+/* ─── HEADER ─── */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 26px 0 22px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem; font-weight: 300;
+  letter-spacing: 0.4em; color: var(--gold);
+  text-transform: uppercase;
+}
+.logo b { font-weight: 600; }
+.header-sub {
+  font-size: 0.58rem; letter-spacing: 0.22em;
+  color: var(--text-muted); text-transform: uppercase;
+}
+
+/* ─── UPLOAD ZONE ─── */
+#uploadScreen {
+  flex: 1; display: flex; flex-direction: column;
+  justify-content: center; padding: 48px 0;
+  animation: fadeUp 0.5s ease forwards;
+}
+
+.upload-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.6rem; font-weight: 300;
+  letter-spacing: 0.04em; line-height: 1.15;
+  margin-bottom: 10px;
+}
+.upload-title em { font-style: italic; color: var(--gold); }
+
+.upload-sub {
+  font-size: 0.68rem; letter-spacing: 0.14em;
+  color: var(--text-muted); text-transform: uppercase;
+  margin-bottom: 44px; line-height: 1.7;
+}
+
+/* Drop zone */
+.drop-zone {
+  border: 1px dashed var(--gold-border);
+  border-radius: 4px;
+  padding: 52px 36px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--gold-dim);
+  position: relative;
+  margin-bottom: 24px;
+}
+.drop-zone:hover, .drop-zone.drag-over {
+  border-color: var(--gold);
+  background: rgba(201,168,76,0.08);
+}
+.drop-zone input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.drop-icon {
+  font-size: 2rem; margin-bottom: 14px; display: block;
+  filter: sepia(1) saturate(2) hue-rotate(5deg) brightness(0.9);
+}
+.drop-main {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem; font-weight: 300; letter-spacing: 0.05em;
+  color: var(--text); margin-bottom: 8px;
+}
+.drop-hint {
+  font-size: 0.6rem; letter-spacing: 0.18em;
+  color: var(--text-muted); text-transform: uppercase;
+}
+
+/* Text fallback */
+.divider {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 20px;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.divider span {
+  font-size: 0.58rem; letter-spacing: 0.2em;
+  color: var(--text-muted); text-transform: uppercase;
+}
+
+textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem; font-weight: 300;
+  line-height: 1.75; padding: 18px 20px;
+  resize: none; min-height: 120px; outline: none;
+  transition: border-color 0.2s;
+  letter-spacing: 0.01em;
+}
+textarea::placeholder { color: var(--text-muted); }
+textarea:focus { border-color: var(--gold-border); }
+
+/* Config row */
+.config-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 20px; gap: 12px; flex-wrap: wrap;
+}
+
+.cfg-group {
+  display: flex; align-items: center; gap: 10px;
+}
+.cfg-label {
+  font-size: 0.6rem; letter-spacing: 0.16em;
+  color: var(--text-muted); text-transform: uppercase;
+}
+.cfg-value {
+  font-size: 0.82rem; font-weight: 600; color: var(--text);
+  min-width: 28px; text-align: center;
+  font-family: 'DM Mono', monospace;
+}
+
+.spin-btn {
+  width: 30px; height: 30px;
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--gold); font-size: 1.1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 2px; transition: all 0.15s;
+  font-family: 'Montserrat', sans-serif; line-height: 1;
+}
+.spin-btn:hover { background: var(--gold-dim); border-color: var(--gold-border); }
+
+.go-btn {
+  background: var(--gold); color: var(--black);
+  border: none; padding: 12px 30px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  cursor: pointer; border-radius: 2px; transition: all 0.2s;
+}
+.go-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+.go-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+/* File attached state */
+.file-attached {
+  display: none; align-items: center; gap: 12px;
+  padding: 12px 18px; background: var(--gold-dim);
+  border: 1px solid var(--gold-border); border-radius: 3px;
+  margin-bottom: 14px;
+}
+.fa-name {
+  font-size: 0.7rem; letter-spacing: 0.08em; color: var(--text); flex: 1;
+}
+.fa-pages {
+  font-size: 0.6rem; letter-spacing: 0.15em; color: var(--gold);
+  text-transform: uppercase; font-family: 'DM Mono', monospace;
+}
+.fa-remove {
+  background: none; border: none; color: var(--text-muted);
+  cursor: pointer; font-size: 0.9rem; padding: 2px 4px;
+  transition: color 0.15s;
+}
+.fa-remove:hover { color: var(--red); }
+
+/* Error */
+.error-strip {
+  display: none; padding: 11px 16px;
+  background: rgba(192,80,58,0.08); border: 1px solid rgba(192,80,58,0.3);
+  border-radius: 3px; margin-top: 14px;
+  font-size: 0.68rem; letter-spacing: 0.06em; color: var(--red);
+}
+
+/* ─── GENERATING SCREEN ─── */
+#generatingScreen {
+  display: none; flex: 1;
+  flex-direction: column; align-items: center; justify-content: center;
+  padding: 80px 0; gap: 0;
+}
+
+.gen-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem; font-weight: 300;
+  letter-spacing: 0.06em; color: var(--text);
+  margin-bottom: 8px;
+}
+
+.gen-sub {
+  font-size: 0.6rem; letter-spacing: 0.22em;
+  color: var(--text-muted); text-transform: uppercase;
+  margin-bottom: 44px;
+}
+
+.progress-track {
+  width: 260px; height: 1px;
+  background: var(--border); border-radius: 1px;
+  overflow: hidden; margin-bottom: 18px;
+}
+.progress-fill {
+  height: 100%; background: var(--gold);
+  border-radius: 1px; transition: width 0.4s ease;
+  width: 0%;
+}
+
+.gen-status {
+  font-size: 0.58rem; letter-spacing: 0.2em;
+  color: var(--text-muted); text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  text-align: center; min-height: 18px;
+}
+
+.gen-count {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3.5rem; font-weight: 300; color: var(--gold);
+  margin-top: 32px; line-height: 1;
+  transition: all 0.2s;
+}
+.gen-count-label {
+  font-size: 0.58rem; letter-spacing: 0.22em;
+  color: var(--text-muted); text-transform: uppercase;
+  text-align: center; margin-top: 6px;
+}
+
+/* ─── DECK SCREEN ─── */
+#deckScreen { display: none; flex: 1; flex-direction: column; animation: fadeUp 0.4s ease forwards; }
+
+.deck-top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 28px 0 20px; border-bottom: 1px solid var(--border);
+  margin-bottom: 32px; gap: 16px; flex-wrap: wrap;
+}
+
+.deck-meta h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem; font-weight: 300; letter-spacing: 0.04em;
+  margin-bottom: 5px;
+}
+.deck-meta p {
+  font-size: 0.58rem; letter-spacing: 0.2em;
+  color: var(--text-muted); text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+}
+
+.deck-controls {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+
+.ctrl-btn {
+  background: none; border: 1px solid var(--border);
+  color: var(--text-muted); padding: 7px 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.58rem; letter-spacing: 0.15em;
+  text-transform: uppercase; cursor: pointer; border-radius: 2px;
+  transition: all 0.15s;
+}
+.ctrl-btn:hover { border-color: var(--gold-border); color: var(--gold); }
+.ctrl-btn.active { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
+
+/* Mode tabs */
+.mode-tabs {
+  display: flex; gap: 2px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 2px; padding: 3px;
+}
+.tab-btn {
+  font-size: 0.57rem; letter-spacing: 0.13em;
+  color: var(--text-muted); padding: 6px 14px;
+  background: none; border: none; border-radius: 1px;
+  cursor: pointer; font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase; transition: all 0.15s;
+}
+.tab-btn.active { background: var(--gold-dim); color: var(--gold); }
+
+/* ─── STUDY MODE ─── */
+#studyMode {}
+
+/* Progress */
+.study-progress {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 26px;
+}
+.sp-track {
+  flex: 1; height: 1px; background: var(--border); border-radius: 1px; overflow: hidden;
+}
+.sp-fill {
+  height: 100%; background: var(--gold); border-radius: 1px; transition: width 0.35s ease;
+}
+.sp-label {
+  font-size: 0.6rem; letter-spacing: 0.18em; color: var(--text-muted);
+  text-transform: uppercase; font-family: 'DM Mono', monospace; white-space: nowrap;
+}
+.sp-label b { color: var(--gold); }
+
+/* ─── CARD PEEL ANIMATION ─── */
+.card-scene {
+  position: relative;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+/* The actual card container */
+.card-shell {
+  position: relative;
+  width: 100%; min-height: 220px;
+  border-radius: 3px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Front and back faces */
+.card-front, .card-back {
+  position: absolute; inset: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 36px 40px;
+  display: flex; flex-direction: column; justify-content: center;
+  min-height: 220px;
+  transition: opacity 0.01s;
+}
+.card-back {
+  background: var(--surface2);
+  border-color: var(--gold-border);
+  opacity: 0; pointer-events: none;
+}
+.card-shell.revealed .card-front { opacity: 0; pointer-events: none; }
+.card-shell.revealed .card-back { opacity: 1; pointer-events: auto; }
+
+/* Peel element — sits in corner */
+.peel-corner {
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 52px; height: 52px;
+  pointer-events: none;
+  z-index: 10;
+}
+.peel-corner::before {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 0 0 0 0;
+  border-color: transparent transparent var(--black) transparent;
+  transition: border-width 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+  border-radius: 0 0 3px 0;
+  filter: drop-shadow(-3px -3px 6px rgba(0,0,0,0.6));
+}
+.peel-corner::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 0 0 0 0;
+  border-color: transparent var(--gold) transparent transparent;
+  transition: border-width 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+  border-radius: 0 0 3px 0;
+}
+
+/* Hover state: small peel hint */
+.card-scene:hover .peel-corner::before {
+  border-width: 0 0 38px 38px;
+}
+.card-scene:hover .peel-corner::after {
+  border-width: 0 38px 38px 0;
+}
+
+/* Revealed: full peel */
+.card-shell.revealed ~ .peel-corner::before,
+.card-scene.peeled .peel-corner::before {
+  border-width: 0 0 62px 62px;
+}
+.card-shell.revealed ~ .peel-corner::after,
+.card-scene.peeled .peel-corner::after {
+  border-width: 0 62px 62px 0;
+}
+
+/* Peel transition on click */
+.card-scene.animating .card-front {
+  animation: fadeToBack 0.28s ease forwards;
+}
+.card-scene.animating .card-back {
+  animation: fadeFromBack 0.28s ease 0.15s forwards;
+}
+.card-scene.animating-back .card-back {
+  animation: fadeToBack 0.28s ease forwards;
+}
+.card-scene.animating-back .card-front {
+  animation: fadeFromBack 0.28s ease 0.15s forwards;
+}
+
+@keyframes fadeToBack {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.97) translateY(4px); }
+}
+@keyframes fadeFromBack {
+  0% { opacity: 0; transform: scale(0.97) translateY(-4px); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Card content */
+.card-tag {
+  font-size: 0.55rem; letter-spacing: 0.28em;
+  color: var(--gold); text-transform: uppercase; font-weight: 600;
+  margin-bottom: 18px;
+}
+.card-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem; font-weight: 300;
+  line-height: 1.55; color: var(--text); letter-spacing: 0.02em;
+}
+.card-hint {
+  margin-top: 24px;
+  font-size: 0.56rem; letter-spacing: 0.2em;
+  color: var(--text-muted); text-transform: uppercase;
+}
+
+/* Source badge */
+.card-source {
+  position: absolute; bottom: 14px; left: 20px;
+  font-size: 0.52rem; letter-spacing: 0.15em;
+  color: var(--text-muted); text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+}
+
+/* Navigation */
+.card-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 0 8px;
+}
+.nav-arrow {
+  background: none; border: 1px solid var(--border);
+  color: var(--text-muted); width: 42px; height: 42px;
+  border-radius: 2px; cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.nav-arrow:hover { border-color: var(--gold-border); color: var(--gold); }
+.nav-arrow:disabled { opacity: 0.2; cursor: not-allowed; }
+
+.nav-center {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.nav-counter {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem; letter-spacing: 0.15em; color: var(--text-muted);
+}
+.nav-counter b { color: var(--text); }
+
+/* Dot indicators (max 20 shown) */
+.nav-dots {
+  display: flex; gap: 5px; align-items: center; flex-wrap: wrap;
+  justify-content: center; max-width: 280px;
+}
+.dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--border); transition: all 0.2s;
+  cursor: pointer;
+}
+.dot.active { background: var(--gold); transform: scale(1.4); }
+.dot.seen { background: rgba(201,168,76,0.4); }
+
+/* Keyboard hint */
+.key-hints {
+  display: flex; gap: 18px; justify-content: center;
+  margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border);
+}
+.key-hint {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.55rem; letter-spacing: 0.12em;
+  color: var(--text-muted); text-transform: uppercase;
+}
+.key {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 3px; padding: 2px 7px;
+  font-family: 'DM Mono', monospace; font-size: 0.6rem;
+  color: var(--text-mid);
+}
+
+/* ─── GRID MODE ─── */
+#gridMode {
+  display: none;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px; padding: 4px 0;
+}
+
+.grid-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px; padding: 20px 22px;
+  cursor: pointer; transition: all 0.18s;
+  position: relative;
+}
+.grid-card:hover { border-color: var(--gold-border); transform: translateY(-2px); }
+.grid-card.open { border-color: var(--gold-border); background: var(--surface2); }
+
+.gc-num {
+  font-family: 'DM Mono', monospace; font-size: 0.55rem;
+  letter-spacing: 0.15em; color: var(--gold); margin-bottom: 10px;
+}
+.gc-q {
+  font-size: 0.73rem; color: var(--text); line-height: 1.55;
+  letter-spacing: 0.01em; margin-bottom: 0; font-weight: 300;
+}
+.gc-a {
+  display: none; font-size: 0.7rem; color: var(--text-mid);
+  line-height: 1.55; margin-top: 14px; padding-top: 14px;
+  border-top: 1px solid var(--gold-border); letter-spacing: 0.01em;
+}
+.grid-card.open .gc-a { display: block; }
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .app { padding: 0 18px 48px; }
+  .upload-title { font-size: 2rem; }
+  .card-text { font-size: 1.1rem; }
+  .card-front, .card-back { padding: 26px 24px; }
+  .key-hints { display: none; }
+  .deck-top { flex-direction: column; }
+  .deck-controls { width: 100%; justify-content: space-between; }
+}
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+<div class="ambient2"></div>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo"><b>AKHARA</b></div>
+    <div class="header-sub">Flashcard Engine</div>
+  </header>
+
+  <!-- UPLOAD SCREEN -->
+  <div id="uploadScreen">
+    <br><br>
+    <div class="upload-title">Turn anything into<br><em>a deck.</em></div>
+    <div class="upload-sub">PDFs, notes, textbooks — paste it or drop it.<br>4 cards per page. No limits.</div>
+
+    <!-- Drop zone -->
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept=".pdf,.txt,.md">
+      <span class="drop-icon">📄</span>
+      <div class="drop-main">Drop your PDF or file here</div>
+      <div class="drop-hint">PDF · TXT · MD &nbsp;·&nbsp; Up to 200 pages</div>
+    </div>
+
+    <!-- Attached file badge -->
+    <div class="file-attached" id="fileAttached">
+      <span class="drop-icon" style="font-size:1rem;margin-bottom:0;">📎</span>
+      <span class="fa-name" id="faName">—</span>
+      <span class="fa-pages" id="faPages">—</span>
+      <button class="fa-remove" id="faRemove" title="Remove">✕</button>
+    </div>
+
+    <div class="divider"><span>or paste text</span></div>
+
+    <textarea id="pasteArea" placeholder="Paste notes, paragraphs, study material — the engine extracts key concepts and builds your deck automatically."></textarea>
+
+    <div class="error-strip" id="errorStrip"></div>
+
+    <div class="config-row">
+      <div class="cfg-group">
+        <span class="cfg-label">Cards / page</span>
+        <button class="spin-btn" id="decBtn">−</button>
+        <span class="cfg-value" id="cppDisplay">4</span>
+        <button class="spin-btn" id="incBtn">+</button>
+        <span class="cfg-label" style="margin-left:6px; display:none" id="totalEstimate"></span>
+      </div>
+      <button class="go-btn" id="goBtn">Build Deck →</button>
+    </div>
+  </div>
+
+  <!-- GENERATING SCREEN -->
+  <div id="generatingScreen">
+    <div class="gen-title">Building your deck</div>
+    <div class="gen-sub" id="genSubtitle">Analysing content</div>
+    <div class="progress-track"><div class="progress-fill" id="genProgress"></div></div>
+    <div class="gen-status" id="genStatus">—</div>
+    <div class="gen-count" id="genCount">0</div>
+    <div class="gen-count-label">cards generated</div>
+  </div>
+
+  <!-- DECK SCREEN -->
+  <div id="deckScreen">
+    <div class="deck-top">
+      <div class="deck-meta">
+        <h2 id="deckTitle">Your Deck</h2>
+        <p id="deckMeta">0 cards</p>
+      </div>
+      <div class="deck-controls">
+        <div class="mode-tabs">
+          <button class="tab-btn active" id="tabStudy" onclick="setTab('study')">Study</button>
+          <button class="tab-btn" id="tabGrid" onclick="setTab('grid')">All Cards</button>
+        </div>
+        <button class="ctrl-btn" onclick="shuffleDeck()">Shuffle</button>
+        <button class="ctrl-btn" onclick="newDeck()">New Deck</button>
+      </div>
+    </div>
+
+    <!-- STUDY MODE -->
+    <div id="studyMode">
+      <div class="study-progress">
+        <div class="sp-track"><div class="sp-fill" id="spFill"></div></div>
+        <div class="sp-label"><b id="spCurrent">1</b> / <span id="spTotal">0</span></div>
+      </div>
+
+      <div class="card-scene" id="cardScene" onclick="handleCardClick()">
+        <div class="card-shell" id="cardShell">
+          <div class="card-front">
+            <div class="card-tag">Question</div>
+            <div class="card-text" id="cardQ"></div>
+            <div class="card-hint">Tap anywhere to reveal →</div>
+            <div class="card-source" id="cardSrc"></div>
+          </div>
+          <div class="card-back">
+            <div class="card-tag" style="color: var(--gold-light);">Answer</div>
+            <div class="card-text" id="cardA"></div>
+            <div class="card-source" id="cardSrcBack"></div>
+          </div>
+        </div>
+        <div class="peel-corner" id="peelCorner"></div>
+      </div>
+
+      <div class="card-nav">
+        <button class="nav-arrow" id="prevBtn" onclick="prevCard(event)">←</button>
+        <div class="nav-center">
+          <div class="nav-counter"><b id="navCurrent">1</b> / <span id="navTotal">0</span></div>
+          <div class="nav-dots" id="navDots"></div>
+        </div>
+        <button class="nav-arrow" id="nextBtn" onclick="nextCard(event)">→</button>
+      </div>
+
+      <div class="key-hints">
+        <div class="key-hint"><span class="key">Space</span> Flip</div>
+        <div class="key-hint"><span class="key">←</span><span class="key">→</span> Navigate</div>
+      </div>
+    </div>
+
+    <!-- GRID MODE -->
+    <div id="gridMode"></div>
+  </div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────
+let cards = [];
+let currentIdx = 0;
+let cpp = 4; // cards per page
+let pdfBase64 = null;
+let pdfPageCount = 0;
+let attachedFileName = '';
+let seen = new Set();
+let isAnimating = false;
+
+// ─────────────────────────────────────────────────────
+// CARDS PER PAGE CONTROL
+// ─────────────────────────────────────────────────────
+document.getElementById('decBtn').onclick = () => {
+  if (cpp > 1) { cpp--; document.getElementById('cppDisplay').textContent = cpp; updateEstimate(); }
+};
+document.getElementById('incBtn').onclick = () => {
+  if (cpp < 10) { cpp++; document.getElementById('cppDisplay').textContent = cpp; updateEstimate(); }
+};
+
+function updateEstimate() {
+  const el = document.getElementById('totalEstimate');
+  if (pdfPageCount > 0) {
+    el.textContent = `≈ ${pdfPageCount * cpp} total cards`;
+    el.style.display = 'inline';
+  }
+}
+
+// ─────────────────────────────────────────────────────
+// FILE HANDLING
+// ─────────────────────────────────────────────────────
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+
+fileInput.addEventListener('change', e => {
+  if (e.target.files[0]) handleFile(e.target.files[0]);
+});
+
+document.getElementById('faRemove').onclick = () => {
+  pdfBase64 = null; pdfPageCount = 0; attachedFileName = '';
+  fileInput.value = '';
+  document.getElementById('fileAttached').style.display = 'none';
+  document.getElementById('totalEstimate').style.display = 'none';
+};
+
+async function handleFile(file) {
+  attachedFileName = file.name;
+  showError('');
+
+  // Text files
+  if (file.type !== 'application/pdf' && !file.name.endsWith('.pdf')) {
+    const text = await file.text();
+    document.getElementById('pasteArea').value = text;
+    pdfBase64 = null;
+    showFileAttached(file.name, null);
+    return;
+  }
+
+  // PDF → base64
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const b64 = e.target.result.split(',')[1];
+    pdfBase64 = b64;
+
+    // Quick page count estimate from base64 size
+    // Actual page count from PDF header
+    try {
+      const bytes = atob(b64.slice(0, 4000));
+      const match = bytes.match(/\/Type\s*\/Pages/);
+      // Count /Page occurrences as rough estimate — we'll use actual from API
+      pdfPageCount = Math.max(1, Math.round(file.size / 40000));
+    } catch { pdfPageCount = Math.round(file.size / 40000) || 1; }
+
+    showFileAttached(file.name, pdfPageCount);
+    updateEstimate();
+  };
+  reader.readAsDataURL(file);
+}
+
+function showFileAttached(name, pages) {
+  document.getElementById('faName').textContent = name;
+  document.getElementById('faPages').textContent = pages ? `~${pages} pages` : 'text file';
+  document.getElementById('fileAttached').style.display = 'flex';
+}
+
+// ─────────────────────────────────────────────────────
+// GENERATE
+// ─────────────────────────────────────────────────────
+document.getElementById('goBtn').onclick = generate;
+
+async function generate() {
+  const pasteText = document.getElementById('pasteArea').value.trim();
+  const hasPDF = !!pdfBase64;
+  const hasText = !!pasteText;
+
+  if (!hasPDF && !hasText) { showError('Drop a file or paste some content first.'); return; }
+
+  showError('');
+  showScreen('generating');
+  document.getElementById('goBtn').disabled = true;
+  cards = [];
+  seen.clear();
+
+  try {
+    if (hasPDF) {
+      await generateFromPDF();
+    } else {
+      await generateFromText(pasteText);
+    }
+  } catch (err) {
+    console.error(err);
+    showError('Generation failed — ' + (err.message || 'try again'));
+    showScreen('upload');
+  } finally {
+    document.getElementById('goBtn').disabled = false;
+  }
+}
+
+// ─────────────────────────────────────────────────────
+// PDF GENERATION — batch by pages
+// ─────────────────────────────────────────────────────
+async function generateFromPDF() {
+  setGenStatus('Reading PDF structure…');
+  setGenProgress(5);
+
+  // First pass: get page count from Claude
+  const pageCountRes = await callAPI({
+    system: 'You are a PDF analysis assistant. Respond ONLY with a JSON object, no markdown.',
+    messages: [{
+      role: 'user',
+      content: [
+        { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdfBase64 } },
+        { type: 'text', text: 'How many pages does this PDF have? Respond ONLY with: {"pages": N}' }
+      ]
+    }]
+  });
+
+  let totalPages = pdfPageCount;
+  try {
+    const txt = pageCountRes.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    const clean = txt.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+    if (parsed.pages) totalPages = parsed.pages;
+  } catch { /* keep estimate */ }
+
+  pdfPageCount = totalPages;
+  updateEstimate();
+
+  document.getElementById('genSubtitle').textContent = `${totalPages} pages detected · ${cpp} cards per page`;
+
+  // Batch: 10 pages per API call to stay within limits
+  const BATCH_SIZE = 10;
+  const batches = Math.ceil(totalPages / BATCH_SIZE);
+
+  for (let b = 0; b < batches; b++) {
+    const pageStart = b * BATCH_SIZE + 1;
+    const pageEnd = Math.min((b + 1) * BATCH_SIZE, totalPages);
+    const batchPages = pageEnd - pageStart + 1;
+    const batchCards = batchPages * cpp;
+
+    setGenStatus(`Batch ${b + 1} / ${batches} · Pages ${pageStart}–${pageEnd}`);
+    setGenProgress(10 + ((b / batches) * 82));
+
+    const prompt = `You are a flashcard generator reading a PDF.
+
+Your task: Generate EXACTLY ${batchCards} flashcards from pages ${pageStart} to ${pageEnd} of this document.
+That is EXACTLY ${cpp} cards per page, one card per distinct concept on that page.
+
+Rules:
+- Cover EVERY page in this range — do not skip any
+- Each card = one specific concept, definition, fact, or causal relationship
+- Questions must be precise and testable
+- Answers must match source wording where possible (especially definitions, procedures, key terms)
+- Vary question types: "What is...", "Why does...", "What happens when...", "How is X different from Y..."
+- Keep answers concise but complete — no padding
+- Include the page number in each card
+
+Respond ONLY with a valid JSON array. No preamble, no markdown, no explanation.
+Format: [{"q":"question","a":"answer","page":N},...]
+
+Generate exactly ${batchCards} cards now.`;
+
+    const res = await callAPI({
+      system: 'You are a flashcard generator. Output ONLY valid JSON arrays, nothing else.',
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdfBase64 } },
+          { type: 'text', text: prompt }
+        ]
+      }],
+      max_tokens: Math.min(4000, batchCards * 120 + 200)
+    });
+
+    const raw = res.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    const clean = raw.replace(/```json|```/g, '').replace(/^\s*[\[{]/, m => m).trim();
+    let parsed;
+    try {
+      // Find JSON array in response
+      const arrMatch = clean.match(/\[[\s\S]*\]/);
+      parsed = JSON.parse(arrMatch ? arrMatch[0] : clean);
+    } catch (e) {
+      console.warn('Parse error on batch', b, raw.slice(0, 200));
+      continue;
+    }
+
+    if (Array.isArray(parsed)) {
+      cards.push(...parsed);
+      document.getElementById('genCount').textContent = cards.length;
+    }
+  }
+
+  if (cards.length === 0) throw new Error('No cards were generated from the PDF.');
+
+  finishGeneration(`${attachedFileName}`);
+}
+
+// ─────────────────────────────────────────────────────
+// TEXT GENERATION — single or chunked call
+// ─────────────────────────────────────────────────────
+async function generateFromText(text) {
+  // Estimate pages from text length (~300 words/page)
+  const wordCount = text.split(/\s+/).length;
+  const estimatedPages = Math.max(1, Math.round(wordCount / 300));
+  const totalCards = estimatedPages * cpp;
+
+  setGenStatus(`~${estimatedPages} pages · ${totalCards} cards`);
+  setGenProgress(15);
+  document.getElementById('genSubtitle').textContent = `${estimatedPages} pages detected · ${cpp} cards per page`;
+
+  // For large texts, split into chunks
+  const CHUNK_SIZE = 8000; // chars
+  if (text.length <= CHUNK_SIZE) {
+    // Single call
+    const res = await callAPI({
+      system: 'You are a flashcard generator. Output ONLY valid JSON arrays, nothing else.',
+      messages: [{
+        role: 'user',
+        content: `Generate exactly ${totalCards} flashcards from this study material (${cpp} per page-equivalent section). Vary question types.
+
+Respond ONLY with a valid JSON array: [{"q":"...","a":"..."},...]
+
+MATERIAL:
+${text}`
+      }],
+      max_tokens: Math.min(4000, totalCards * 120 + 300)
+    });
+
+    setGenProgress(85);
+    const raw = res.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const arrMatch = clean.match(/\[[\s\S]*\]/);
+    const parsed = JSON.parse(arrMatch ? arrMatch[0] : clean);
+    if (Array.isArray(parsed)) cards.push(...parsed);
+    document.getElementById('genCount').textContent = cards.length;
+  } else {
+    // Chunk it
+    const chunks = [];
+    for (let i = 0; i < text.length; i += CHUNK_SIZE) chunks.push(text.slice(i, i + CHUNK_SIZE));
+
+    for (let i = 0; i < chunks.length; i++) {
+      const chunkCards = Math.round((chunks[i].length / text.length) * totalCards);
+      setGenStatus(`Section ${i + 1} / ${chunks.length}`);
+      setGenProgress(15 + ((i / chunks.length) * 75));
+
+      const res = await callAPI({
+        system: 'You are a flashcard generator. Output ONLY valid JSON arrays, nothing else.',
+        messages: [{
+          role: 'user',
+          content: `Generate exactly ${chunkCards} flashcards from this section. Vary question types.
+
+Respond ONLY with: [{"q":"...","a":"..."},...]
+
+SECTION:
+${chunks[i]}`
+        }],
+        max_tokens: Math.min(3000, chunkCards * 120 + 300)
+      });
+
+      const raw = res.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
+      const clean = raw.replace(/```json|```/g, '').trim();
+      try {
+        const arrMatch = clean.match(/\[[\s\S]*\]/);
+        const parsed = JSON.parse(arrMatch ? arrMatch[0] : clean);
+        if (Array.isArray(parsed)) cards.push(...parsed);
+      } catch { console.warn('Chunk parse error', i); }
+      document.getElementById('genCount').textContent = cards.length;
+    }
+  }
+
+  if (cards.length === 0) throw new Error('No cards generated.');
+  finishGeneration('Text Input');
+}
+
+// ─────────────────────────────────────────────────────
+// FINISH
+// ─────────────────────────────────────────────────────
+function finishGeneration(source) {
+  setGenProgress(100);
+  setGenStatus('Complete');
+  setTimeout(() => {
+    currentIdx = 0;
+    renderDeck(source);
+    showScreen('deck');
+  }, 600);
+}
+
+// ─────────────────────────────────────────────────────
+// API CALL
+// ─────────────────────────────────────────────────────
+async function callAPI({ system, messages, max_tokens = 2000 }) {
+  const body = {
+    model: 'claude-sonnet-4-20250514',
+    max_tokens,
+    messages
+  };
+  if (system) body.system = system;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `API error ${res.status}`);
+  }
+  return res.json();
+}
+
+// ─────────────────────────────────────────────────────
+// DECK RENDER
+// ─────────────────────────────────────────────────────
+function renderDeck(source) {
+  document.getElementById('deckTitle').textContent = source || 'Your Deck';
+  document.getElementById('deckMeta').textContent = `${cards.length} cards generated`;
+  document.getElementById('navTotal').textContent = cards.length;
+  document.getElementById('spTotal').textContent = cards.length;
+
+  renderCard();
+  renderGrid();
+  renderDots();
+  setTab('study');
+}
+
+function renderCard() {
+  const card = cards[currentIdx];
+  document.getElementById('cardQ').textContent = card.q;
+  document.getElementById('cardA').textContent = card.a;
+
+  const srcText = card.page ? `Page ${card.page}` : '';
+  document.getElementById('cardSrc').textContent = srcText;
+  document.getElementById('cardSrcBack').textContent = srcText;
+
+  // Reset peel state
+  const shell = document.getElementById('cardShell');
+  const scene = document.getElementById('cardScene');
+  shell.classList.remove('revealed');
+  scene.classList.remove('peeled', 'animating', 'animating-back');
+
+  document.getElementById('navCurrent').textContent = currentIdx + 1;
+  document.getElementById('spCurrent').textContent = currentIdx + 1;
+
+  const pct = ((currentIdx + 1) / cards.length) * 100;
+  document.getElementById('spFill').style.width = pct + '%';
+
+  document.getElementById('prevBtn').disabled = currentIdx === 0;
+  document.getElementById('nextBtn').disabled = currentIdx === cards.length - 1;
+
+  seen.add(currentIdx);
+  updateDots();
+}
+
+// ─────────────────────────────────────────────────────
+// CARD FLIP (peel)
+// ─────────────────────────────────────────────────────
+function handleCardClick() {
+  if (isAnimating) return;
+  isAnimating = true;
+
+  const shell = document.getElementById('cardShell');
+  const scene = document.getElementById('cardScene');
+  const revealed = shell.classList.contains('revealed');
+
+  if (!revealed) {
+    scene.classList.add('animating');
+    setTimeout(() => {
+      shell.classList.add('revealed');
+      scene.classList.remove('animating');
+      scene.classList.add('peeled');
+      isAnimating = false;
+    }, 300);
+  } else {
+    scene.classList.add('animating-back');
+    setTimeout(() => {
+      shell.classList.remove('revealed');
+      scene.classList.remove('animating-back', 'peeled');
+      isAnimating = false;
+    }, 300);
+  }
+}
+
+// ─────────────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────────────
+function prevCard(e) {
+  if (e) e.stopPropagation();
+  if (currentIdx > 0) { currentIdx--; renderCard(); }
+}
+function nextCard(e) {
+  if (e) e.stopPropagation();
+  if (currentIdx < cards.length - 1) { currentIdx++; renderCard(); }
+}
+
+document.addEventListener('keydown', e => {
+  if (document.getElementById('deckScreen').style.display === 'none') return;
+  if (document.activeElement.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowRight' || e.key === 'l') nextCard(null);
+  else if (e.key === 'ArrowLeft' || e.key === 'h') prevCard(null);
+  else if (e.key === ' ') { e.preventDefault(); handleCardClick(); }
+});
+
+// ─────────────────────────────────────────────────────
+// DOTS
+// ─────────────────────────────────────────────────────
+function renderDots() {
+  const container = document.getElementById('navDots');
+  container.innerHTML = '';
+  const max = Math.min(cards.length, 30);
+  for (let i = 0; i < max; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.onclick = (e) => { e.stopPropagation(); currentIdx = i; renderCard(); };
+    container.appendChild(d);
+  }
+  updateDots();
+}
+
+function updateDots() {
+  const dots = document.querySelectorAll('.dot');
+  const max = Math.min(cards.length, 30);
+  for (let i = 0; i < max; i++) {
+    dots[i].className = 'dot' + (i === currentIdx ? ' active' : seen.has(i) ? ' seen' : '');
+  }
+}
+
+// ─────────────────────────────────────────────────────
+// GRID
+// ─────────────────────────────────────────────────────
+function renderGrid() {
+  const grid = document.getElementById('gridMode');
+  grid.innerHTML = '';
+  cards.forEach((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'grid-card';
+    el.innerHTML = `<div class="gc-num">${String(i + 1).padStart(2, '0')}${c.page ? ' · p.' + c.page : ''}</div><div class="gc-q">${c.q}</div><div class="gc-a">${c.a}</div>`;
+    el.onclick = () => {
+      el.classList.toggle('open');
+      // Also jump to this card
+      currentIdx = i;
+      if (document.getElementById('tabStudy').classList.contains('active')) renderCard();
+    };
+    grid.appendChild(el);
+  });
+}
+
+// ─────────────────────────────────────────────────────
+// SHUFFLE
+// ─────────────────────────────────────────────────────
+function shuffleDeck() {
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+  seen.clear(); currentIdx = 0;
+  renderCard(); renderGrid(); renderDots();
+}
+
+// ─────────────────────────────────────────────────────
+// NEW DECK
+// ─────────────────────────────────────────────────────
+function newDeck() {
+  cards = []; currentIdx = 0; seen.clear();
+  pdfBase64 = null; pdfPageCount = 0; attachedFileName = '';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('fileAttached').style.display = 'none';
+  document.getElementById('pasteArea').value = '';
+  document.getElementById('totalEstimate').style.display = 'none';
+  showScreen('upload');
+}
+
+// ─────────────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────────────
+function setTab(tab) {
+  const studyEl = document.getElementById('studyMode');
+  const gridEl = document.getElementById('gridMode');
+  document.getElementById('tabStudy').classList.toggle('active', tab === 'study');
+  document.getElementById('tabGrid').classList.toggle('active', tab === 'grid');
+  studyEl.style.display = tab === 'study' ? 'block' : 'none';
+  gridEl.style.display = tab === 'grid' ? 'grid' : 'none';
+}
+
+// ─────────────────────────────────────────────────────
+// SCREEN SWITCHING
+// ─────────────────────────────────────────────────────
+function showScreen(name) {
+  document.getElementById('uploadScreen').style.display = name === 'upload' ? 'flex' : 'none';
+  document.getElementById('generatingScreen').style.display = name === 'generating' ? 'flex' : 'none';
+  document.getElementById('deckScreen').style.display = name === 'deck' ? 'flex' : 'none';
+}
+
+// ─────────────────────────────────────────────────────
+// UI HELPERS
+// ─────────────────────────────────────────────────────
+function showError(msg) {
+  const el = document.getElementById('errorStrip');
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+}
+function setGenProgress(pct) {
+  document.getElementById('genProgress').style.width = pct + '%';
+}
+function setGenStatus(msg) {
+  document.getElementById('genStatus').textContent = msg;
+}
+
+// Init
+showScreen('upload');
+</script>
+</body>
+</html>
